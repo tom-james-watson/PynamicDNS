@@ -1,5 +1,10 @@
 # PynamicDNS
-Cloudflare Dynamic DNS - Built in Python
+[Cloudflare](https://cloudflare.com/) [Dynamic DNS](https://en.wikipedia.org/wiki/Dynamic_DNS) - Built in [Python](https://python.org/)
+
+Goals:
+- Make it work and serve its purpose (to update DNS on Cloudflare dynamically)
+- Teach me some Python ready for university
+- Be linked to by [this blog post](https://blog.preprocess.uk/home-hosted-websites/)
 
 ## Usage
 Using this is relatively simple, I think. The configuration is [YAML](http://yaml.org/).
