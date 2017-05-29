@@ -4,11 +4,11 @@ import json
 class Cloudflare:
     cloudflareApi = 'https://api.cloudflare.com/client/v4'
 
-    def __init__(self, cloudflareEmail, cloudflareApiKey, onFail, onSuccess):
-        self.cloudflareEmail = cloudflareEmail
-        self.cloudflareApiKey = cloudflareApiKey
-        self.onFail = onFail
-        self.onSuccess = onSuccess
+    def __init__(self, config):
+        self.cloudflareEmail = config.config['cloudflare_email']
+        self.cloudflareApiKey = config.config['cloudflare_api_key']
+        self.onFail = config.onFail
+        self.onSuccess = config.onSuccess
 
     def test(self):
         response = requests.get(self.cloudflareApi + '/user', headers = {
@@ -36,16 +36,16 @@ class Cloudflare:
             self.onFail('[Failed] Fetch Identifier :: Update Record: ' + zoneId + '->' + hostname)
             return
 
-        response = requests.get(self.cloudflareApi + '/zones/' + zoneId + '/dns_records/' + identifier, headers = {
+        response = requests.put(self.cloudflareApi + '/zones/' + zoneId + '/dns_records/' + identifier, headers = {
             'X-Auth-Email': self.cloudflareEmail,
             'X-Auth-Key': self.cloudflareApiKey,
             'Content-Type': 'application/json'
-        }, data = {
+        }, data = json.dumps({
             'type': 'A',
             'name': hostname,
             'content': ip,
-            'proxied': 'true'
-        })
+            'proxied': True
+        }))
 
         if response.text is None or not json.loads(response.text)['success']:
             self.onFail('[Failed] Update Record: ' + zoneId + '->' + hostname)

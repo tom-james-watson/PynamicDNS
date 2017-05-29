@@ -6,7 +6,7 @@ def main():
 
     try:
         config = Configuration('pynamic.yml', lambda failMsg: print(failMsg), lambda successMsg: print(successMsg))
-        config.process(lambda cloudflare, zone, hostname, ip, onFail, onSuccess: cloudflare.updateRecord(zone['zone_id'], hostname, ip))
+        config.process(lambda zone, hostname, config: config.cloudflare.updateRecord(zone['zone_id'], hostname, config.ip))
     except (KeyboardInterrupt, SystemExit):
         print('CTRL+C detected - goodbye!')
 
