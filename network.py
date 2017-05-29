@@ -1,5 +1,5 @@
 import requests
 
 class Network:
-    def fetchIp(self):
+    def fetchIp():
         return requests.get('https://api.ipify.org/').text
