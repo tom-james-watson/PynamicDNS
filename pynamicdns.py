@@ -5,12 +5,8 @@ def main():
     print('       Thanks for using PynamicDNS! :-)')
 
     try:
-        config = Configuration('pynamic.yml')
-        config.process(
-            lambda cloudflare, zone, hostname, ip, onFail, onSuccess: cloudflare.updateRecord(zone['zone_id'], hostname, ip, onFail, onSuccess),
-            lambda failMsg: print(failMsg),
-            lambda successMsg: print(successMsg)
-        )
+        config = Configuration('pynamic.yml', lambda failMsg: print(failMsg), lambda successMsg: print(successMsg))
+        config.process(lambda cloudflare, zone, hostname, ip, onFail, onSuccess: cloudflare.updateRecord(zone['zone_id'], hostname, ip))
     except (KeyboardInterrupt, SystemExit):
         print('CTRL+C detected - goodbye!')
 
