@@ -3,20 +3,20 @@ import threading
 import time
 from network import Network
 from cloudflare import Cloudflare
+from pynamicError import PynamicError
 
 class Configuration:
-    def __init__(self, filename, onFail, onSuccess):
+    def __init__(self, filename, output):
         configFile = open(filename, 'r')
         self.config  = yaml.load(configFile.read())
-        self.onFail = onFail
-        self.onSuccess = onSuccess
+        self.output = output
         self.ip = None
 
     def processZone(self, zone, action):
         for hostname in zone['hostnames']:
             action(zone, hostname, self)
 
-    def processZones(self, cloudflare, ip, action):
+    def processZones(self, action):
         for zone in self.config['zones']:
             self.processZone(zone, action)
 
@@ -25,8 +25,7 @@ class Configuration:
 
         ip = Network.fetchIp()
         if ip is None:
-            self.onFail('Failed to obtain IP address')
-            return
+            raise PynamicError('Failed to obtain IP address')
 
         if self.ip == ip:
             return
@@ -34,14 +33,13 @@ class Configuration:
 
         emailKeyTest = self.cloudflare.test()
         if emailKeyTest is None:
-            self.onFail('Failed to authenticate with Cloudflare.')
-            return
-        self.onSuccess('Authenticated with Cloudflare: ' + emailKeyTest['id'])
+            raise PynamicError('Failed to authenticate with Cloudflare.')
+        self.output('Authenticated with Cloudflare: ' + emailKeyTest['id'])
 
-        timer = threading.Timer(self.config['update_delay_seconds'], lambda: self.processZones(self.cloudflare, ip, action))
+        timer = threading.Timer(self.config['update_delay_seconds'], lambda: self.processZones(action))
         timer.daemon = True
         timer.start()
-        self.processZones(self.cloudflare, ip, action)
+        self.processZones(action)
 
         while True:
             time.sleep(1)

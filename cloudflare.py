@@ -1,5 +1,6 @@
 import requests
 import json
+from pynamicError import PynamicError
 
 class Cloudflare:
     cloudflareApi = 'https://api.cloudflare.com/client/v4'
@@ -7,8 +8,7 @@ class Cloudflare:
     def __init__(self, config):
         self.cloudflareEmail = config.config['cloudflare_email']
         self.cloudflareApiKey = config.config['cloudflare_api_key']
-        self.onFail = config.onFail
-        self.onSuccess = config.onSuccess
+        self.output = config.output
 
     def test(self):
         response = requests.get(self.cloudflareApi + '/user', headers = {
@@ -33,8 +33,7 @@ class Cloudflare:
     def updateRecord(self, zoneId, hostname, ip):
         identifier = self.fetchIdentifier(zoneId, hostname)
         if identifier is None:
-            self.onFail('[Failed] Fetch Identifier :: Update Record: ' + zoneId + '->' + hostname)
-            return
+            raise PynamicError('[Failed] Fetch Identifier :: Update Record: ' + zoneId + '->' + hostname)
 
         response = requests.put(self.cloudflareApi + '/zones/' + zoneId + '/dns_records/' + identifier, headers = {
             'X-Auth-Email': self.cloudflareEmail,
@@ -48,6 +47,6 @@ class Cloudflare:
         }))
 
         if response.text is None or not json.loads(response.text)['success']:
-            self.onFail('[Failed] Update Record: ' + zoneId + '->' + hostname)
-            return
-        self.onSuccess('Updated Record: ' + zoneId + '->' + hostname)
+            raise PynamicError('[Failed] Update Record: ' + zoneId + '->' + hostname)
+
+        self.output('Updated Record: ' + zoneId + '->' + hostname)
