@@ -1,6 +1,5 @@
 import yaml
 import threading
-import time
 from network import Network
 from cloudflare import Cloudflare
 from pynamicError import PynamicError
@@ -40,6 +39,4 @@ class Configuration:
         timer.daemon = True
         timer.start()
         self.processZones(action)
-
-        while True:
-            time.sleep(1)
+        return True
