@@ -1,12 +1,17 @@
 import yaml
 import threading
+from os import path
 from network import Network
 from cloudflare import Cloudflare
 from pynamicError import PynamicError
 
 class Configuration:
     def __init__(self, filename, output):
-        configFile = open(filename, 'r')
+
+        basepath = path.dirname(__file__)
+        filepath = path.abspath(path.join(basepath, filename))
+
+        configFile = open(filepath, 'r')
         self.config  = yaml.load(configFile.read())
         self.output = output
         self.ip = None
