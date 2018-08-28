@@ -25,7 +25,7 @@ class Cloudflare:
             'Content-Type': 'application/json'
         })
 
-        jsonResp = json.loads(response.text)
+        jsonResp = response.json()
         if response.text is None or not jsonResp['success']:
             return None
         return jsonResp['result'][0]['id']
