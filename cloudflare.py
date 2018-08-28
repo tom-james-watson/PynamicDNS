@@ -43,7 +43,7 @@ class Cloudflare:
             'type': 'A',
             'name': hostname,
             'content': ip,
-            'proxied': True
+            'proxied': False
         }))
 
         if response.text is None or not json.loads(response.text)['success']:
