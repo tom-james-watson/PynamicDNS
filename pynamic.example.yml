@@ -3,9 +3,4 @@ cloudflare_api_key: 'your_cloudflare_api_key_here'
 zones:
   - zone_id: your_zone_identifier_here
     hostnames:
-      - mysite.com
-      - subdomain.mysite.com
-  - zone_id: your_other_zone_identifier_here
-    hostnames:
-      - my2ndsite.com
-      - sub.my2ndsite.com
+      - tomw.space
