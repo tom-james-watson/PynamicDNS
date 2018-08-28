@@ -35,8 +35,5 @@ class Configuration:
             raise PynamicError('Failed to authenticate with Cloudflare.')
         self.output('Authenticated with Cloudflare: ' + emailKeyTest['id'])
 
-        timer = threading.Timer(self.config['update_delay_seconds'], lambda: self.processZones(action))
-        timer.daemon = True
-        timer.start()
         self.processZones(action)
         return True

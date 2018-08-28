@@ -9,10 +9,6 @@ def main():
     try:
         config = Configuration('pynamic.yml', lambda successMsg: print(successMsg))
         config.process(lambda zone, hostname, config: config.cloudflare.updateRecord(zone['zone_id'], hostname, config.ip))
-
-        # Keep the main thread alive
-        while True:
-            time.sleep(1)
     except (KeyboardInterrupt, SystemExit):
         print('CTRL+C detected - goodbye!')
     except PynamicError as error:
