@@ -18,7 +18,7 @@ class Cloudflare:
         })
         return json.loads(response.text)['result']
 
-    def fetchIdentifier(self, zoneId, hostname):
+    def fetchRecord(self, zoneId, hostname):
         response = requests.get(self.cloudflareApi + '/zones/' + zoneId + '/dns_records?type=A&name=' + hostname, headers = {
             'X-Auth-Email': self.cloudflareEmail,
             'X-Auth-Key': self.cloudflareApiKey,
@@ -28,14 +28,14 @@ class Cloudflare:
         jsonResp = response.json()
         if response.text is None or not jsonResp['success']:
             return None
-        return jsonResp['result'][0]['id']
+        return jsonResp['result'][0]
 
     def updateRecord(self, zoneId, hostname, ip):
-        identifier = self.fetchIdentifier(zoneId, hostname)
-        if identifier is None:
+        record = self.fetchRecord(zoneId, hostname)
+        if record is None:
             raise PynamicError('[Failed] Fetch Identifier :: Update Record: ' + zoneId + '->' + hostname)
 
-        response = requests.put(self.cloudflareApi + '/zones/' + zoneId + '/dns_records/' + identifier, headers = {
+        response = requests.put(self.cloudflareApi + '/zones/' + zoneId + '/dns_records/' + record['id'], headers = {
             'X-Auth-Email': self.cloudflareEmail,
             'X-Auth-Key': self.cloudflareApiKey,
             'Content-Type': 'application/json'
@@ -43,7 +43,7 @@ class Cloudflare:
             'type': 'A',
             'name': hostname,
             'content': ip,
-            'proxied': False
+            'proxied': record['proxied']
         }))
 
         if response.text is None or not json.loads(response.text)['success']:
